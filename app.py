@@ -239,27 +239,27 @@ def create_filters(df):
     st.sidebar.markdown("## 🔍 Filtros")
     
     # Filtro por año
-    years = sorted(df['YEAR_ID'].unique().tolist()) if 'YEAR_ID' in df.columns else sorted(df['YEAR'].unique().tolist())
+    years = sorted(df['YEAR_ID'].dropna().unique().tolist()) if 'YEAR_ID' in df.columns else sorted(df['YEAR'].dropna().unique().tolist())
     year_filter = st.sidebar.multiselect("Año", years, default=years)
     
     # Filtro por país
-    countries = sorted(df['COUNTRY'].unique().tolist())
+    countries = sorted(df['COUNTRY'].dropna().unique().tolist())
     country_filter = st.sidebar.multiselect("País", countries, default=countries)
     
     # Filtro por línea de producto
-    product_lines = sorted(df['PRODUCTLINE'].unique().tolist())
+    product_lines = sorted(df['PRODUCTLINE'].dropna().unique().tolist())
     product_filter = st.sidebar.multiselect("Línea de Producto", product_lines, default=product_lines)
     
     # Filtro por estado
-    statuses = sorted(df['STATUS'].unique().tolist())
+    statuses = sorted(df['STATUS'].dropna().unique().tolist())
     status_filter = st.sidebar.multiselect("Estado del Pedido", statuses, default=statuses)
     
     # Filtro por tamaño de trato
-    deal_sizes = sorted(df['DEALSIZE'].unique().tolist())
+    deal_sizes = sorted(df['DEALSIZE'].dropna().unique().tolist())
     deal_filter = st.sidebar.multiselect("Tamaño del Trato", deal_sizes, default=deal_sizes)
     
     # Filtro por territorio
-    territories = sorted(df['TERRITORY'].unique().tolist())
+    territories = sorted(df['TERRITORY'].dropna().unique().tolist())
     territory_filter = st.sidebar.multiselect("Territorio", territories, default=territories)
     
     # Rango de ventas
