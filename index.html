@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics Dashboard - Análisis Predictivo de Ventas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --secondary: #f093fb;
+            --accent: #4facfe;
+            --dark: #1a1a2e;
+            --light: #ffffff;
+            --gray: #f8f9fa;
+            --text: #2d3436;
+            --text-light: #636e72;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: var(--light);
+            z-index: 1;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            text-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero h1 span {
+            display: block;
+            background: linear-gradient(90deg, #fff 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--light);
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Floating Charts Animation */
+        .floating-charts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .chart-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .chart-1 {
+            width: 150px;
+            height: 150px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .chart-2 {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 8%;
+            animation-delay: 1s;
+        }
+
+        .chart-3 {
+            width: 100px;
+            height: 100px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+
+        .chart-4 {
+            width: 130px;
+            height: 130px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--gray);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--light);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            padding: 6rem 2rem;
+            background: var(--light);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-item i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tech-item h4 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .tech-item p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Analysis Section */
+        .analysis {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .analysis-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .analysis-tab {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            background: var(--light);
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .analysis-tab.active,
+        .analysis-tab:hover {
+            background: var(--primary);
+            color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .analysis-content {
+            display: none;
+            background: var(--light);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .analysis-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .analysis-item {
+            padding: 1.5rem;
+            background: var(--gray);
+            border-radius: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-item h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .analysis-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            text-align: center;
+            color: var(--light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-cta {
+            padding: 1.2rem 3rem;
+            background: var(--light);
+            color: var(--primary);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-cta-outline {
+            background: transparent;
+            color: var(--light);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-cta-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--light);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: var(--light);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--light);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer p {
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-description {
+                font-size: 1.1rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .cta h2 {
+                font-size: 2rem;
+            }
+
+            .hero-buttons,
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        /* Scroll Animation */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="floating-charts">
+            <div class="chart-element chart-1">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 80 L35 50 L50 65 L65 35 L80 50" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="chart-element chart-2">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="60" width="15" height="20" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="40" y="40" width="15" height="40" fill="rgba(255,255,255,0.4)"/>
+                    <rect x="60" y="30" width="15" height="50" fill="rgba(255,255,255,0.4)"/>
+                </svg>
+            </div>
+            <div class="chart-element chart-3">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="30" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-dasharray="20 10"/>
+                </svg>
+            </div>
+            <div class="chart-element chart-4">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 50 Q50 20 80 50" stroke="rgba(255,255,255,0.5)" stroke-width="3" fill="none"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-chart-line"></i> Dashboard de Ventas con IA
+            </div>
+            <h1>
+                Sales Analytics
+                <span>Dashboard</span>
+            </h1>
+            <p class="hero-description">
+                Análisis descriptivo y predictivo completo con visualizaciones interactivas. 
+                Transforma tus datos de ventas en decisiones de negocio inteligentes.
+            </p>
+            <div class="hero-buttons">
+                <a href="https://tu-usuario.streamlit.app" class="btn btn-primary" target="_blank">
+                    <i class="fas fa-rocket"></i> Ver Dashboard en Vivo
+                </a>
+                <a href="https://github.com/tu-usuario/sales-analytics-dashboard" class="btn btn-secondary" target="_blank">
+                    <i class="fab fa-github"></i> Ver en GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-title scroll-reveal">
+                <h2>✨ Características Principales</h2>
+                <p>Todo lo que necesitas para analizar tus datos de ventas en un solo lugar</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Análisis Univariado</h3>
+                    <p>Distribuciones, estadísticas descriptivas, correlaciones y análisis de variables individuales con gráficos interactivos.</p>
+                </div>
+                
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3>Análisis Bivariado</h3>
+                    <p>Relaciones entre variables, tendencias temporales, análisis geográfico y comparaciones cruzadas.</p>
+                </div>
+                
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Análisis Predictivo</h3>
+                    <p>Modelos de regresión lineal, clasificación y predicción de tendencias futuras con machine learning.</p>
+                </div>
+                
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <h3>Filtros Interactivos</h3>
+                    <p>Filtra por año, país, producto, estado, territorio y rango de ventas para análisis personalizados.</p>
+                </div>
+                
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>KPIs Dinámicos</h3>
+                    <p>Métricas clave con comparación temporal, tendencias y alertas visuales automáticas.</p>
+                </div>
+                
+                <div class="feature-card scroll-reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Interfaz adaptable que funciona perfectamente en desktop, tablet y dispositivos móviles.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="tech-stack">
+        <div class="container">
+            <div class="section-title scroll-reveal">
+                <h2>🛠️ Tecnologías Utilizadas</h2>
+                <p>Stack tecnológico moderno y robusto para análisis de datos</p>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-item scroll-reveal">
+                    <i class="fab fa-python"></i>
+                    <h4>Python</h4>
+                    <p>Lenguaje principal</p>
+                </div>
+                <div class="tech-item scroll-reveal">
+                    <i class="fas fa-chart-pie"></i>
+                    <h4>Streamlit</h4>
+                    <p>Framework web</p>
+                </div>
+                <div class="tech-item scroll-reveal">
+                    <i class="fas fa-chart-area"></i>
+                    <h4>Plotly</h4>
+                    <p>Visualizaciones</p>
+                </div>
+                <div class="tech-item scroll-reveal">
+                    <i class="fas fa-database"></i>
+                    <h4>Pandas</h4>
+                    <p>Análisis de datos</p>
+                </div>
+                <div class="tech-item scroll-reveal">
+                    <i class="fas fa-brain"></i>
+                    <h4>Scikit-learn</h4>
+                    <p>Machine Learning</p>
+                </div>
+                <div class="tech-item scroll-reveal">
+                    <i class="fab fa-github"></i>
+                    <h4>GitHub</h4>
+                    <p>Deploy & Pages</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Types -->
+    <section class="analysis">
+        <div class="container">
+            <div class="section-title scroll-reveal">
+                <h2>📊 Tipos de Análisis</h2>
+                <p>Explora diferentes niveles de análisis para tus datos de ventas</p>
+            </div>
+            
+            <div class="analysis-tabs">
+                <button class="analysis-tab active" onclick="showAnalysis('univariate')">Univariado</button>
+                <button class="analysis-tab" onclick="showAnalysis('bivariate')">Bivariado</button>
+                <button class="analysis-tab" onclick="showAnalysis('predictive')">Predictivo</button>
+            </div>
+            
+            <div id="univariate" class="analysis-content active">
+                <h3 style="margin-bottom: 2rem; color: var(--dark);">Análisis Univariado</h3>
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-chart-bar"></i> Distribución de Ventas</h4>
+                        <p>Histogramas y boxplots para entender la distribución de ventas y cantidades.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-calculator"></i> Estadísticas Descriptivas</h4>
+                        <p>Media, mediana, moda, desviación estándar, percentiles y más.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-th"></i> Matriz de Correlación</h4>
+                        <p>Heatmap de correlación entre variables numéricas del dataset.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-pie-chart"></i> Variables Categóricas</h4>
+                        <p>Distribución de países, productos, estados y territorios.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="bivariate" class="analysis-content">
+                <h3 style="margin-bottom: 2rem; color: var(--dark);">Análisis Bivariado</h3>
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-calendar-alt"></i> Tendencias Temporales</h4>
+                        <p>Evolución de ventas por año, mes y trimestre con líneas de tendencia.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-globe"></i> Análisis Geográfico</h4>
+                        <p>Comparación de ventas por país y territorio con visualizaciones.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-box-open"></i> Por Producto</h4>
+                        <p>Ventas y cantidades por línea de producto y tamaño de trato.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-scatter-chart"></i> Scatter Plots</h4>
+                        <p>Relaciones entre cantidad, precio y ventas con burbujas de color.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="predictive" class="analysis-content">
+                <h3 style="margin-bottom: 2rem; color: var(--dark);">Análisis Predictivo</h3>
+                <div class="analysis-grid">
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-chart-line"></i> Regresión Lineal</h4>
+                        <p>Predicción de ventas futuras con métricas de evaluación del modelo.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-tags"></i> Clasificación</h4>
+                        <p>Predicción del tamaño de trato (Small/Medium/Large) con ML.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-crystal-ball"></i> Demo Interactiva</h4>
+                        <p>Prueba el modelo predictivo con parámetros personalizados.</p>
+                    </div>
+                    <div class="analysis-item">
+                        <h4><i class="fas fa-chart-area"></i> Detección de Tendencias</h4>
+                        <p>Identificación de patrones estacionales y tendencias de mercado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>🚀 ¿Listo para Empezar?</h2>
+            <p>Despliega tu propio dashboard de análisis de ventas y transforma tus datos en decisiones inteligentes.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/tu-usuario/sales-analytics-dashboard" class="btn-cta" target="_blank">
+                    <i class="fab fa-github"></i> Ver Repositorio
+                </a>
+                <a href="https://tu-usuario.streamlit.app" class="btn-cta btn-cta-outline" target="_blank">
+                    <i class="fas fa-rocket"></i> Probar Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://github.com/tu-usuario" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/tu-usuario" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/tu-usuario" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="mailto:tu-email@ejemplo.com"><i class="fas fa-envelope"></i></a>
+            </div>
+            <div class="footer-links">
+                <a href="#features">Características</a>
+                <a href="#analysis">Análisis</a>
+                <a href="#tech">Tecnologías</a>
+                <a href="https://github.com/tu-usuario/sales-analytics-dashboard">Documentación</a>
+            </div>
+            <p>&copy; 2024 Sales Analytics Dashboard. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching
+        function showAnalysis(type) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.analysis-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.analysis-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            document.getElementById(type).classList.add('active');
+        }
+
+        // Scroll reveal animation
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.scroll-reveal');
+            
+            reveals.forEach(element => {
+                const windowHeight = window.innerHeight;
+                const elementTop = element.getBoundingClientRect().top;
+                const revealPoint = 150;
+                
+                if (elementTop < windowHeight - revealPoint) {
+                    element.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Counter animation for KPIs (if needed in future)
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            function updateCounter() {
+                start += increment;
+                if (start < target) {
+                    element.textContent = Math.floor(start).toLocaleString();
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target.toLocaleString();
+                }
+            }
+            
+            updateCounter();
+        }
+    </script>
+</body>
+</html>
+
